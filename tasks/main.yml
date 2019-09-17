@@ -1,0 +1,15 @@
+---
+# tasks file for dhcp
+- name: Run main tasks for DEB only
+  block:
+
+  - include_tasks: ipconfig.yml
+    when: inventory_hostname in groups['dhcpd']
+
+  - include_tasks: chrony.yml
+    when: inventory_hostname in groups['chrony']
+
+  - include_tasks: dhcpd.yml
+    when: inventory_hostname in groups['dhcpd']
+
+  when: ansible_os_family == "Debian"

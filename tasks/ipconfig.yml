@@ -1,0 +1,50 @@
+# tasks file for dhcp:upconfig
+
+# - name: Set static IP address via DHCPCD
+#   template:
+#     src: etc/dhcpcd.conf
+#     dest: /etc/dhcpcd.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify: DHCPCD Restart Service
+#   when: inventory_hostname in groups['dhcpd']
+
+- name: Set static IP address via network
+  template:
+    src: etc/network/interfaces
+    dest: /etc/network/interfaces
+    owner: root
+    group: root
+    mode: 0644
+  notify: Network Restart Service
+  when: inventory_hostname in groups['dhcpd']
+
+- name: Network Enable Service
+  service:
+    name: networking
+    enabled: yes
+  when: inventory_hostname in groups['dhcpd']
+  register: network_services
+
+- name: DHCPCD Disable Service
+  service:
+    name: dhcpcd
+    enabled: no
+  when: inventory_hostname in groups['dhcpd']
+  register: network_services
+
+
+- name: Reboot immediately if there was a change
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  when: network_services is changed
+
+- name: Wait for the reboot to complete if there was a change
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timehout: 300
+  when: network_services is changed

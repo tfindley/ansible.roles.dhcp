@@ -1,0 +1,59 @@
+---
+# tasks file for rpsetup:bind
+
+
+- name: DHCP - Install/Update apt package
+  apt:
+    name: isc-dhcp-server
+  when: inventory_hostname in groups['dhcpd']
+
+
+- name: DHCP - Copy in default service file
+  copy:
+    src: etc/default/isc-dhcp-server
+    dest: /etc/default/isc-dhcp-server
+    owner: root
+    group: root
+    mode: 0644
+    directory_mode: 2755
+  notify: DHCP Restart Service
+  when: inventory_hostname in groups['dhcpd']
+
+
+- name: DHCP - Copy in reservations file
+  copy:
+    src: etc/dhcp/
+    dest: /etc/dhcp/
+    owner: root
+    group: root
+    mode: 0644
+    directory_mode: 2755
+  notify: DHCP Restart Service
+  when: inventory_hostname in groups['dhcpd']
+
+
+- name: DHCP - Create configuration file from a template
+  template:
+    src: etc/dhcp/dhcpd.conf
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: DHCP Restart Service
+  when: inventory_hostname in groups['dhcpd']
+
+# You can use the following to switch DHCP functionallity between the cores - don't forget to update the handler!
+
+- name: DHCP Disable Service
+  service:
+    name: isc-dhcp-server
+    state: stopped
+    enabled: no
+  when: inventory_hostname in groups['dhcpd-secondary']
+
+- name: DHCP Enable Service
+  service:
+    name: isc-dhcp-server
+    state: started
+    enabled: yes
+  when: inventory_hostname in groups['dhcpd-primary']
