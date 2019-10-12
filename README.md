@@ -1,5 +1,10 @@
-Role Name
-=========
+DHCP
+====
+
+Example Run command
+-------------------
+
+    ansible-playbook --private-key <key> -i <inventory> <playbook> -u <user> -K
 
 A brief description of the role goes here.
 
