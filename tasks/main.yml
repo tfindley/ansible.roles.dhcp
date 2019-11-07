@@ -6,9 +6,6 @@
   - include_tasks: ipconfig.yml
     when: inventory_hostname in groups['dhcpd']
 
-  - include_tasks: chrony.yml
-    when: inventory_hostname in groups['chrony']
-
   - include_tasks: dhcpd.yml
     when: inventory_hostname in groups['dhcpd']
 
