@@ -49,11 +49,11 @@
     name: isc-dhcp-server
     state: stopped
     enabled: no
-  when: inventory_hostname in groups['dhcpd-secondary']
+  when: inventory_hostname in groups['dhcpd_secondary']
 
 - name: DHCP Enable Service
   service:
     name: isc-dhcp-server
     state: started
     enabled: yes
-  when: inventory_hostname in groups['dhcpd-primary']
+  when: inventory_hostname in groups['dhcpd_primary']
