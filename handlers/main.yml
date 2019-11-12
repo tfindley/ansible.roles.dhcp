@@ -16,7 +16,7 @@
   service:
     name: isc-dhcp-server
     state: restarted
-  when: inventory_hostname in groups['dhcpd-primary']
+  when: inventory_hostname in groups['dhcpd_primary']
 
 - name: Chrony Restart
   service:

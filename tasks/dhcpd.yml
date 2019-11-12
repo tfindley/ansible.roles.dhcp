@@ -20,19 +20,27 @@
   when: inventory_hostname in groups['dhcpd']
 
 
-- name: DHCP - Copy in reservations file
-  copy:
-    src: etc/dhcp/
-    dest: /etc/dhcp/
+- name: DHCP - Create reservations clients list from template
+  template:
+    src: etc/dhcp/dhcpd.reserv.conf
+    dest: /etc/dhcp/dhcpd.reserv.conf
     owner: root
     group: root
     mode: 0644
-    directory_mode: 2755
   notify: DHCP Restart Service
   when: inventory_hostname in groups['dhcpd']
 
+- name: DHCP - Create allowed clients list from template
+  template:
+    src: etc/dhcp/dhcpd.allowed.conf
+    dest: /etc/dhcp/dhcpd.allowed.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: DHCP Restart Service
+  when: inventory_hostname in groups['dhcpd']
 
-- name: DHCP - Create configuration file from a template
+- name: DHCP - Create configuration from template
   template:
     src: etc/dhcp/dhcpd.conf
     dest: /etc/dhcp/dhcpd.conf
@@ -44,14 +52,14 @@
 
 # You can use the following to switch DHCP functionallity between the cores - don't forget to update the handler!
 
-- name: DHCP Disable Service
+- name: DHCP Disable Service on secondary
   service:
     name: isc-dhcp-server
     state: stopped
     enabled: no
   when: inventory_hostname in groups['dhcpd_secondary']
 
-- name: DHCP Enable Service
+- name: DHCP Enable Service on primary
   service:
     name: isc-dhcp-server
     state: started

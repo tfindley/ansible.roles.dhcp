@@ -4,11 +4,11 @@
 #
 ddns-update-style none;
 
-option domain-name "{{dns_intzone}}";
+option domain-name "home";
 option domain-name-servers {% for host in groups['bind'] -%}{{ hostvars[host].ansible_default_ipv4.address }}{% if not loop.last %}{{', '}}{% else %}{{';'}}{% endif %}{%- endfor %}
 
-default-lease-time {{dhcp_leasetime_default}};
-max-lease-time {{dhcp_leasetime_max}};
+default-lease-time 600;
+max-lease-time 7200;
 
 # If this DHCP server is the official DHCP server for the local
 # network, the authoritative directive should be uncommented.
@@ -41,19 +41,19 @@ log-facility local7;
 # }
 
 # A slightly different configuration for an internal subnet.
-subnet {{net_sub}} netmask {{net_mask}} {
-  range {{dhcp_range_start}} {{dhcp_range_end}};
+subnet 10.0.0.0 netmask 255.255.255.0 {
+  range 10.0.0.100 10.0.0.150;
   option domain-name-servers {% for host in groups['bind'] -%}{{ hostvars[host].ansible_default_ipv4.address }}{% if not loop.last %}{{', '}}{% else %}{{';'}}{% endif %}{%- endfor %}
 
-  option domain-name "{{dns_intzone}}";
-  option domain-search "{{dns_intzone}}";
-  option subnet-mask {{net_mask}};
-  option routers {{net_gateway}};
-  option broadcast-address {{net_broadcast}};
+  option domain-name "home";
+  option domain-search "home";
+  option subnet-mask 255.255.255.0;
+  option routers 10.0.0.1;
+  option broadcast-address 10.0.0.255;
   option ntp-servers {% for host in groups['ntp_server'] -%}{{ hostvars[host].ansible_default_ipv4.address }}{% if not loop.last %}{{', '}}{% else %}{{';'}}{% endif %}{%- endfor %}
   
-  default-lease-time {{dhcp_leasetime_default}};
-  max-lease-time {{dhcp_leasetime_max}};
+  default-lease-time 600;
+  max-lease-time 7200;
   deny unknown-clients;
 }
 
