@@ -7,10 +7,10 @@
 # Include files from /etc/network/interfaces.d:
 source-directory /etc/network/interfaces.d
 
-auto eth0
-iface eth0 inet static
-                address         {{ ip }}
-                netmask         {{ subnet }}
-                gateway         {{ gateway }}
-                broadcast       {{ broadcast }}
-                dns-nameservers {{ extdns1 }} {{ extdns2 }}
+auto {{ansible_default_ipv4.interface}}
+iface {{ansible_default_ipv4.interface}} inet static
+                address         {{ip_address}}
+                netmask         {{ip_netmask}}
+                gateway         {{ip_gateway}}
+                broadcast       {{ip_broadcast}}
+                dns-nameservers {{dns_nameservers}}

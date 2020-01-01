@@ -3,21 +3,41 @@
 
 
 - name: DHCP - Install/Update apt package
-  apt:
-    name: isc-dhcp-server
-  when: inventory_hostname in groups['dhcpd']
+  package:
+    name: "{{item}}"
+    state: present
+  with_items: "{{package_install}}"
+  # when: inventory_hostname in groups['dhcpd']
 
 
-- name: DHCP - Copy in default service file
-  copy:
-    src: etc/default/isc-dhcp-server
-    dest: /etc/default/isc-dhcp-server
-    owner: root
-    group: root
-    mode: 0644
-    directory_mode: 2755
-  notify: DHCP Restart Service
-  when: inventory_hostname in groups['dhcpd']
+# - name: DHCP - Copy in default service file
+#   template:
+#     src: etc/default/isc-dhcp-server
+#     dest: /etc/default/isc-dhcp-server
+#     owner: root
+#     group: root
+#     mode: 0644
+#     directory_mode: 2755
+#   notify: DHCP Restart Service
+#   when: ansible_os_family == "Debian"
+
+- name: DHCP - Modify in default service file, Debian
+  lineinfile:
+    dest: '/etc/default/isc-dhcp-server'
+    regexp: 'INTERFACESv4='
+    line: INTERFACESv4="{{v4_adapter}}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+
+- name: DHCP - Modify in default service file, RedHat
+  lineinfile:
+    dest: /etc/sysconfig/dhcpd
+    regexp: "DHCPDARGS="
+    line: "DHCPDARGS={{v4_adapter}}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
 
 
 - name: DHCP - Create reservations clients list from template
@@ -28,7 +48,7 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: inventory_hostname in groups['dhcpd']
+  # when: inventory_hostname in groups['dhcpd']
 
 - name: DHCP - Create allowed clients list from template
   template:
@@ -38,7 +58,7 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: inventory_hostname in groups['dhcpd']
+  # when: inventory_hostname in groups['dhcpd']
 
 - name: DHCP - Create configuration from template
   template:
@@ -48,20 +68,30 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: inventory_hostname in groups['dhcpd']
+  when: dhcp_failover is not defined or dhcp_failover == False
+
+- name: DHCP - Create configuration from template
+  template:
+    src: etc/dhcp/dhcpd.failover.conf
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: DHCP Restart Service
+  when: dhcp_failover is defined and dhcp_failover == True
+
 
 # You can use the following to switch DHCP functionallity between the cores - don't forget to update the handler!
 
-- name: DHCP Disable Service on secondary
-  service:
-    name: isc-dhcp-server
-    state: stopped
-    enabled: no
-  when: inventory_hostname in groups['dhcpd_secondary']
+# - name: DHCP Disable Service on secondary
+#   service:
+#     name: isc-dhcp-server
+#     state: stopped
+#     enabled: no
+#   when: inventory_hostname in groups['dhcpd_secondary']
 
-- name: DHCP Enable Service on primary
+- name: DHCP Enable Service
   service:
-    name: isc-dhcp-server
+    name: "{{dhcp_service}}"
     state: started
     enabled: yes
-  when: inventory_hostname in groups['dhcpd_primary']

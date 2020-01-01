@@ -1,2 +1,5 @@
 ---
 # vars file for dhcp
+
+v4_adapter: "{% if ip_adapter is defined and ip_adapter|length > 0 %}{{ip_adapter}}{% elif ansible_default_ipv4.interface is defined %}{{ansible_default_ipv4.interface}}{% endif %}"
+v4_ipaddr:  "{% if ip_address is defined and ip_address|length > 0 %}{{ip_address}}{% elif ansible_default_ipv4.address is defined %}{{ansible_default_ipv4.address}}{% endif %}"
