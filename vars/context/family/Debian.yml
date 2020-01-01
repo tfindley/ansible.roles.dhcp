@@ -1,0 +1,4 @@
+package_install:
+- isc-dhcp-server
+
+dhcp_service: isc-dhcp-server

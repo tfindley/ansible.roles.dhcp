@@ -1,25 +1,6 @@
 ---
 # handlers file for dhcp
-- name: DHCPCD Restart Service
-  service:
-    name: dhcpcd
-    state: restarted
-  when: inventory_hostname in groups['dhcpd']
-
-- name: Network Restart Service
-  service:
-    name: networking
-    state: restarted
-  when: inventory_hostname in groups['dhcpd']
-
 - name: DHCP Restart Service
   service:
-    name: isc-dhcp-server
+    name: "{{dhcp_service}}"
     state: restarted
-  when: inventory_hostname in groups['dhcpd_primary']
-
-- name: Chrony Restart
-  service:
-    name: chrony
-    state: restarted
-  when: inventory_hostname in groups['chrony']
