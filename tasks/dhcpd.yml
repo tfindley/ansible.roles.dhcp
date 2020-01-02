@@ -93,5 +93,4 @@
 - name: DHCP Enable Service
   service:
     name: "{{dhcp_service}}"
-    state: started
     enabled: yes
