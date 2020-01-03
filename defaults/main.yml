@@ -1,2 +1,6 @@
 ---
 # defaults file for dhcp
+dhcp_failover: False
+dhcp_denyunknown: False
+dhcp_leasetime_default: 600
+dhcp_leasetime_max: 7200

@@ -68,7 +68,7 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: dhcp_failover is not defined or dhcp_failover == False
+  when: dhcp_failover == False
 
 - name: DHCP - Create configuration from template
   template:
@@ -78,7 +78,7 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: dhcp_failover is defined and dhcp_failover == True
+  when: dhcp_failover == True
 
 
 # You can use the following to switch DHCP functionallity between the cores - don't forget to update the handler!

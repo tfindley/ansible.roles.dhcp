@@ -16,7 +16,26 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Required:
+- dhcp_network:
+- dhcp_netmask:
+- dhcp_broadcast:
+- dhcp_gateway:
+- dhcp_dns_ns:
+- dhcp_ntp_ts:
+- dhcp_dns_zone:
+- dhcp_dns_search:
+- dhcp_range_start:
+- dhcp_range_end:
+
+Optional:
+- dhcp_leasetime_default: (default: "600")
+- dhcp_leasetime_max:     (default: "7200")
+- dhcp_failover:          (default: False)
+- dhcp_denyunknown:       (default: False)
+- dhcp_pxe_server:
+- dhcp_pxe_file:
+
 
 Dependencies
 ------------
@@ -28,9 +47,33 @@ Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: dhcp_server
       roles:
          - { role: username.rolename, x: 42 }
+
+      vars:
+        dhcp_failover:          True
+        dhcp_denyunknown:       True
+        dhcp_network:           "192.168.1.0"
+        dhcp_netmask:           "255.255.255.0"
+        dhcp_broadcast:         "192.168.1.255"
+        dhcp_gateway:           "192.168.1.1"
+        dhcp_dns_ns:
+        - "192.168.1.2"
+        - "192.168.1.3"
+        dhcp_ntp_ts:
+        - "192.168.1.4"
+        - "192.168.1.5"
+        dhcp_dns_zone:          "anslab"
+        dhcp_dns_search:
+        - "anslab"
+        - "devlab"
+        dhcp_range_start:       "10.0.0.100"
+        dhcp_range_end:         "10.0.0.150"
+        dhcp_leasetime_default: "600"
+        dhcp_leasetime_max:     "7200"
+        dhcp_pxe_server:        "10.0.0.20"
+        dhcp_pxe_file:          "pxelinux.0"
 
 License
 -------
