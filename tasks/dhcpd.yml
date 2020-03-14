@@ -60,15 +60,15 @@
   notify: DHCP Restart Service
   # when: inventory_hostname in groups['dhcpd']
 
-- name: DHCP - Create configuration from template
-  template:
-    src: etc/dhcp/dhcpd.conf
-    dest: /etc/dhcp/dhcpd.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: DHCP Restart Service
-  when: dhcp_failover == False
+# - name: DHCP - Create configuration from template
+#   template:
+#     src: etc/dhcp/dhcpd.conf.j2
+#     dest: /etc/dhcp/dhcpd.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+#   notify: DHCP Restart Service
+#   when: dhcp_failover == False
 
 - name: DHCP - Create configuration from template
   template:
@@ -78,7 +78,7 @@
     group: root
     mode: 0644
   notify: DHCP Restart Service
-  when: dhcp_failover == True
+  # when: dhcp_failover == True
 
 
 # You can use the following to switch DHCP functionallity between the cores - don't forget to update the handler!
