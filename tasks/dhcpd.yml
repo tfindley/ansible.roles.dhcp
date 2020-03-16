@@ -4,9 +4,9 @@
 
 - name: DHCP - Install/Update apt package
   package:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
-  with_items: "{{package_install}}"
+  with_items: "{{ package_install }}"
   # when: inventory_hostname in groups['dhcpd']
 
 
@@ -25,7 +25,7 @@
   lineinfile:
     dest: '/etc/default/isc-dhcp-server'
     regexp: 'INTERFACESv4='
-    line: INTERFACESv4="{{v4_adapter}}"
+    line: INTERFACESv4="{{ v4_adapter }}"
     state: present
   when: ansible_os_family == "Debian"
 
@@ -34,7 +34,7 @@
   lineinfile:
     dest: /etc/sysconfig/dhcpd
     regexp: "DHCPDARGS="
-    line: "DHCPDARGS={{v4_adapter}}"
+    line: "DHCPDARGS={{ v4_adapter }}"
     state: present
   when: ansible_os_family == "RedHat"
 
@@ -92,5 +92,5 @@
 
 - name: DHCP Enable Service
   service:
-    name: "{{dhcp_service}}"
+    name: "{{ dhcp_service }}"
     enabled: yes

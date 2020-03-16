@@ -2,5 +2,5 @@
 # handlers file for dhcp
 - name: DHCP Restart Service
   service:
-    name: "{{dhcp_service}}"
+    name: "{{ dhcp_service }}"
     state: restarted
