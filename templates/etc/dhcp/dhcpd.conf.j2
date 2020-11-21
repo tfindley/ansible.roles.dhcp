@@ -3,12 +3,12 @@
 #
 ddns-update-style none;
 
-option domain-name "{{dhcp_dns_zone}}";
-{% if dhcp_dns_ns is defined %}option domain-name-servers {{dhcp_dns_ns | join(', ')}};{% else %}{{ansible_default_ipv4.address}};
+option domain-name "{{ dhcp_dns_zone }}";
+{% if dhcp_dns_ns is defined %}option domain-name-servers {{ dhcp_dns_ns | join(', ') }};{% else %}{{ ansible_default_ipv4.address }};
 {% endif %}
 
-default-lease-time {{dhcp_leasetime_default}};
-max-lease-time {{dhcp_leasetime_max}};
+default-lease-time {{ dhcp_leasetime_default }};
+max-lease-time {{ dhcp_leasetime_max }};
 
 # If this DHCP server is the official DHCP server for the local
 # network, the authoritative directive should be uncommented.
@@ -78,29 +78,29 @@ key omapi_key {
 {%- endif%}
 
 # A slightly different configuration for an internal subnet.
-subnet {{dhcp_network}} netmask {{dhcp_netmask}} {
-  {% if dhcp_dns_ns is defined %}option domain-name-servers {{dhcp_dns_ns | join(', ')}};{% else %}{{ansible_default_ipv4.address}};
+subnet {{ dhcp_network }} netmask {{ dhcp_netmask }} {
+  {% if dhcp_dns_ns is defined %}option domain-name-servers {{ dhcp_dns_ns | join(', ') }};{% else %}{{ ansible_default_ipv4.address }};
 {% endif %}
 
-  option domain-name "{{dhcp_dns_zone}}";
-  option domain-search "{{dhcp_dns_search | join(' ')}}";
-  option subnet-mask {{dhcp_netmask}};
-  option routers {{dhcp_gateway}};
-  option broadcast-address {{dhcp_broadcast}};
-  {% if dhcp_ntp_ts is defined %}option ntp-servers {{dhcp_ntp_ts | join(', ')}};
+  option domain-name "{{ dhcp_dns_zone }}";
+  option domain-search "{{ dhcp_dns_search | join(' ') }}";
+  option subnet-mask {{ dhcp_netmask }};
+  option routers {{ dhcp_gateway }};
+  option broadcast-address {{ dhcp_broadcast }};
+  {% if dhcp_ntp_ts is defined %}option ntp-servers {{ dhcp_ntp_ts | join(', ') }};
 {% endif %}
 
-  {% if dhcp_pxe_server is defined %}filename "{{dhcp_pxe_file}}";
-  next-server {{dhcp_pxe_server}};
+  {% if dhcp_pxe_server is defined %}filename "{{ dhcp_pxe_file }}";
+  next-server {{ dhcp_pxe_server }};
 {% endif %}
 
   pool {
 {% if dhcp_failover == True %}    failover peer "failover-partner";
 {% endif %}
 
-    range {{dhcp_range_start}} {{dhcp_range_end}};
-    default-lease-time {{dhcp_leasetime_default}};
-    max-lease-time {{dhcp_leasetime_max}};
+    range {{ dhcp_range_start }} {{ dhcp_range_end }};
+    default-lease-time {{ dhcp_leasetime_default }};
+    max-lease-time {{ dhcp_leasetime_max }};
 {% if dhcp_denyunknown == True %}    deny unknown-clients;
 {% endif %}
     

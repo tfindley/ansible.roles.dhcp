@@ -24,7 +24,7 @@
 # This deals with family-specific variabiles. Store them in /var/family/___.yml
 - name: Load OS family specific variables file
   include_vars:
-    file: "context/family/{{ansible_os_family}}.yml" # RedHat.yml
+    file: "context/family/{{ ansible_os_family }}.yml" # RedHat.yml
   ignore_errors: true
 
 
