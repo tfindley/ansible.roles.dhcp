@@ -40,6 +40,43 @@ log-facility local7;
 #      secret AvengersAssemble==;
 # }
 
+{% if dhcp_failover == True %}
+{% if 'dhcpd_primary' in group_names %}
+failover peer "failover-partner" {
+     primary;
+     address {% for host in groups['dhcpd_primary'] %}{{ hostvars[host].ansible_default_ipv4.address }}{% endfor %};
+     port 519;
+     peer address {% for host in groups['dhcpd_secondary'] %}{{ hostvars[host].ansible_default_ipv4.address }}{% endfor %};
+     peer port 520;
+     max-response-delay 60;
+     max-unacked-updates 10;
+     mclt 3600;
+     split 128;
+     load balance max seconds 3;
+}
+{%- endif %}
+{% if 'dhcpd_secondary' in group_names %}
+failover peer "failover-partner" {
+     secondary;
+     address {% for host in groups['dhcpd_secondary'] %}{{ hostvars[host].ansible_default_ipv4.address }}{% endfor %};
+     port 520;
+     peer address {% for host in groups['dhcpd_primary'] %}{{ hostvars[host].ansible_default_ipv4.address }}{% endfor %};
+     peer port 519;
+     max-response-delay 60;
+     max-unacked-updates 10;
+     load balance max seconds 3;
+}
+{%- endif %}
+
+omapi-port 7911;
+omapi-key omapi_key;
+
+key omapi_key {
+     algorithm hmac-md5;
+     secret AvengersAssemble==;
+}
+{%- endif%}
+
 # A slightly different configuration for an internal subnet.
 subnet {{dhcp_network}} netmask {{dhcp_netmask}} {
   {% if dhcp_dns_ns is defined %}option domain-name-servers {{dhcp_dns_ns | join(', ')}};{% else %}{{ansible_default_ipv4.address}};
@@ -49,7 +86,7 @@ subnet {{dhcp_network}} netmask {{dhcp_netmask}} {
   option domain-search "{{dhcp_dns_search | join(' ')}}";
   option subnet-mask {{dhcp_netmask}};
   option routers {{dhcp_gateway}};
-  option broadcast-address {{dhcp_broadcast}}; 
+  option broadcast-address {{dhcp_broadcast}};
   {% if dhcp_ntp_ts is defined %}option ntp-servers {{dhcp_ntp_ts | join(', ')}};
 {% endif %}
 
@@ -58,6 +95,9 @@ subnet {{dhcp_network}} netmask {{dhcp_netmask}} {
 {% endif %}
 
   pool {
+{% if dhcp_failover == True %}    failover peer "failover-partner";
+{% endif %}
+
     range {{dhcp_range_start}} {{dhcp_range_end}};
     default-lease-time {{dhcp_leasetime_default}};
     max-lease-time {{dhcp_leasetime_max}};
@@ -69,5 +109,3 @@ subnet {{dhcp_network}} netmask {{dhcp_netmask}} {
     include "/etc/dhcp/dhcpd.allowed.conf";
   }
 }
-
-
